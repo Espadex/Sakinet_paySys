@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Pagos Telecom</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page">
+    <header class="page__header">
+      <div class="page__badge">Telecom Billing</div>
+      <h1>Portal de pagos</h1>
+      <p>Gestiona los cobros de tus clientes en un panel moderno y registra cada transacción en segundos.</p>
+    </header>
+
+    <main class="page__content">
+      <section class="card card--form">
+        <div class="card__header">
+          <h2>Registrar pago</h2>
+          <p>Completa los detalles de la factura y confirma el cobro.</p>
+        </div>
+        <form id="payment-form" class="form">
+          <div class="form__grid">
+            <label class="form__field">
+              <span>Número de cuenta</span>
+              <input id="accountNumber" name="accountNumber" type="text" placeholder="Ej. 554781239" required>
+            </label>
+            <label class="form__field">
+              <span>Nombre del cliente</span>
+              <input id="customerName" name="customerName" type="text" placeholder="Ej. Laura Martínez" required>
+            </label>
+            <label class="form__field">
+              <span>Monto</span>
+              <input id="amount" name="amount" type="number" min="0" step="0.01" placeholder="Ej. 850.00" required>
+            </label>
+            <label class="form__field">
+              <span>Método de pago</span>
+              <select id="paymentMethod" name="paymentMethod" required>
+                <option value="" disabled selected>Selecciona una opción</option>
+                <option value="Tarjeta crédito">Tarjeta de crédito</option>
+                <option value="Tarjeta débito">Tarjeta de débito</option>
+                <option value="Transferencia">Transferencia bancaria</option>
+                <option value="Efectivo">Pago en efectivo</option>
+              </select>
+            </label>
+          </div>
+          <label class="form__field form__field--full">
+            <span>Notas (opcional)</span>
+            <textarea id="notes" name="notes" rows="3" placeholder="Información adicional del pago"></textarea>
+          </label>
+          <div class="form__actions">
+            <button type="submit" class="button">Registrar pago</button>
+            <p id="form-message" class="form__message" role="status"></p>
+          </div>
+        </form>
+      </section>
+
+      <section class="card card--history">
+        <div class="card__header card__header--row">
+          <div>
+            <h2>Historial de pagos</h2>
+            <p>Mantén un registro claro y exporta desde el botón inferior.</p>
+          </div>
+          <button id="download-button" class="button button--ghost">Descargar CSV</button>
+        </div>
+        <div class="table-wrapper">
+          <table class="table" aria-live="polite">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Número de cuenta</th>
+                <th>Cliente</th>
+                <th>Método</th>
+                <th class="table__align-right">Monto</th>
+                <th>Notas</th>
+              </tr>
+            </thead>
+            <tbody id="payments-table-body">
+              <tr>
+                <td colspan="6" class="table__empty">No hay pagos registrados todavía.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page__footer">
+    <small>© <span id="year"></span> Telecom Billing Portal. Todos los derechos reservados.</small>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

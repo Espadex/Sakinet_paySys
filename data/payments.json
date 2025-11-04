@@ -1,0 +1,11 @@
+[
+  {
+    "id": "80e8aacb-b256-4ad7-be6e-28821f60a0e2",
+    "accountNumber": "5552352",
+    "customerName": "renton tapia",
+    "amount": 75000,
+    "paymentMethod": "Tarjeta débito",
+    "notes": "hola",
+    "createdAt": "2025-11-04T01:22:18.753Z"
+  }
+]
