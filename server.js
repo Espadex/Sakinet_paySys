@@ -72,6 +72,16 @@ function verifyPassword(password, { salt, passwordHash }) {
   return crypto.timingSafeEqual(provided, stored);
 }
 
+function toPublicUser(user) {
+  return {
+    id: user.id,
+    email: user.email,
+    createdAt: user.createdAt,
+    lastLoginAt: user.lastLoginAt || null,
+    loginCount: user.loginCount || 0
+  };
+}
+
 async function logLoginAttempt(entry) {
   const records = await readLoginAudit();
   records.unshift({
@@ -139,12 +149,7 @@ async function authenticate(req, res, next) {
     activeSession.lastAccessAt = new Date().toISOString();
     await writeSessions(sessions);
 
-    req.user = {
-      id: user.id,
-      email: user.email,
-      createdAt: user.createdAt,
-      lastLoginAt: user.lastLoginAt || null
-    };
+    req.user = toPublicUser(user);
     req.sessionToken = token;
 
     return next();
@@ -174,51 +179,83 @@ app.post('/api/auth/login', async (req, res) => {
 
   try {
     const users = await readUsers();
-    let user = users.find((candidate) => candidate.email === normalizedEmail);
-    const now = new Date().toISOString();
+    const user = users.find((candidate) => candidate.email === normalizedEmail);
 
     if (!user) {
-      const credentials = hashPassword(passwordValue);
-      user = {
-        id: crypto.randomUUID(),
-        email: normalizedEmail,
-        salt: credentials.salt,
-        passwordHash: credentials.hash,
-        createdAt: now,
-        lastLoginAt: now,
-        loginCount: 1
-      };
-      users.push(user);
-      await writeUsers(users);
-      await logLoginAttempt({ email: normalizedEmail, userId: user.id, status: 'register' });
-    } else {
-      const isValid = verifyPassword(passwordValue, user);
-      if (!isValid) {
-        await logLoginAttempt({ email: normalizedEmail, userId: user.id, status: 'invalid-password' });
-        return res.status(401).json({ message: 'Credenciales incorrectas' });
-      }
-
-      user.lastLoginAt = now;
-      user.loginCount = (user.loginCount || 0) + 1;
-      await writeUsers(users);
-      await logLoginAttempt({ email: normalizedEmail, userId: user.id, status: 'login' });
+      await logLoginAttempt({ email: normalizedEmail, userId: null, status: 'user-not-found' });
+      return res.status(401).json({ message: 'Credenciales incorrectas' });
     }
+
+    const isValid = verifyPassword(passwordValue, user);
+    if (!isValid) {
+      await logLoginAttempt({ email: normalizedEmail, userId: user.id, status: 'invalid-password' });
+      return res.status(401).json({ message: 'Credenciales incorrectas' });
+    }
+
+    const now = new Date().toISOString();
+    user.lastLoginAt = now;
+    user.loginCount = (user.loginCount || 0) + 1;
+    await writeUsers(users);
+    await logLoginAttempt({ email: normalizedEmail, userId: user.id, status: 'login' });
 
     const session = await createSession(user.id);
 
     return res.json({
       token: session.token,
-      user: {
-        id: user.id,
-        email: user.email,
-        createdAt: user.createdAt,
-        lastLoginAt: user.lastLoginAt,
-        loginCount: user.loginCount
-      }
+      user: toPublicUser(user)
     });
   } catch (error) {
     console.error('Error en inicio de sesión', error);
     return res.status(500).json({ message: 'No se pudo iniciar sesión' });
+  }
+});
+
+app.post('/api/auth/register', async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Correo y contraseña son obligatorios' });
+  }
+
+  const normalizedEmail = normalizeEmail(email);
+  const passwordValue = String(password);
+
+  if (!normalizedEmail.includes('@')) {
+    return res.status(400).json({ message: 'El correo no es válido' });
+  }
+
+  if (passwordValue.length < 6) {
+    return res.status(400).json({ message: 'La contraseña debe tener al menos 6 caracteres' });
+  }
+
+  try {
+    const users = await readUsers();
+    const exists = users.some((candidate) => candidate.email === normalizedEmail);
+
+    if (exists) {
+      return res.status(409).json({ message: 'Ya existe una cuenta con este correo' });
+    }
+
+    const now = new Date().toISOString();
+    const credentials = hashPassword(passwordValue);
+    const user = {
+      id: crypto.randomUUID(),
+      email: normalizedEmail,
+      salt: credentials.salt,
+      passwordHash: credentials.hash,
+      createdAt: now,
+      lastLoginAt: null,
+      loginCount: 0
+    };
+
+    users.push(user);
+    await writeUsers(users);
+    await logLoginAttempt({ email: normalizedEmail, userId: user.id, status: 'register' });
+
+    return res.status(201).json({ user: toPublicUser(user) });
+  } catch (error) {
+    console.error('Error registrando usuario', error);
+    return res.status(500).json({ message: 'No se pudo crear la cuenta' });
   }
 });
 

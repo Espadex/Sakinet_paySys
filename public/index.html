@@ -28,12 +28,16 @@
     </header>
 
     <main class="page__content">
-      <section class="card card--login" id="login-card" data-section="login">
+      <section class="card card--auth" id="auth-card" data-section="login">
         <div class="card__header">
           <h2>Accede al portal</h2>
-          <p>Inicia sesión para gestionar la facturación y registrar nuevos pagos.</p>
+          <p>Usa tus credenciales autorizadas para gestionar la facturación y registrar nuevos pagos.</p>
         </div>
-        <form id="login-form" class="form form--login" autocomplete="on">
+        <div class="card__tabs" role="tablist" aria-label="Seleccione entre iniciar sesión o crear cuenta">
+          <button type="button" class="card__tab card__tab--active" data-auth-tab="login" aria-selected="true">Iniciar sesión</button>
+          <button type="button" class="card__tab" data-auth-tab="register" aria-selected="false" tabindex="-1">Crear cuenta</button>
+        </div>
+        <form id="login-form" class="form form--login" autocomplete="on" data-auth-panel="login">
           <label class="form__field">
             <span>Correo electrónico</span>
             <input id="loginEmail" name="email" type="email" inputmode="email" placeholder="tu.nombre@telecom.com" required autocomplete="email">
@@ -47,7 +51,26 @@
             <p id="login-message" class="form__message" role="status"></p>
           </div>
         </form>
-        <p class="login__hint">¿Primera vez? Crearemos tu acceso automáticamente con las credenciales que ingreses.</p>
+        <form id="register-form" class="form form--login" autocomplete="off" data-auth-panel="register" hidden>
+          <label class="form__field">
+            <span>Correo institucional</span>
+            <input id="registerEmail" name="email" type="email" inputmode="email" placeholder="ejemplo@telecom.com" required autocomplete="email">
+          </label>
+          <label class="form__field">
+            <span>Contraseña</span>
+            <input id="registerPassword" name="password" type="password" placeholder="Crea una contraseña" required minlength="6" autocomplete="new-password">
+          </label>
+          <label class="form__field">
+            <span>Confirmar contraseña</span>
+            <input id="registerPasswordConfirm" name="passwordConfirm" type="password" placeholder="Repite la contraseña" required minlength="6" autocomplete="new-password">
+          </label>
+          <div class="form__actions">
+            <button type="submit" id="register-submit" class="button">Crear cuenta</button>
+            <p id="register-message" class="form__message" role="status"></p>
+          </div>
+        </form>
+        <p class="auth__hint" data-auth-panel="login">Acceso exclusivo para usuarios previamente registrados.</p>
+        <p class="auth__hint" data-auth-panel="register" hidden>Las cuentas nuevas deben ser aprobadas por el equipo de seguridad.</p>
       </section>
 
       <section class="card card--form" data-section="payments" hidden>
@@ -63,7 +86,7 @@
             </label>
             <label class="form__field">
               <span>Nombre del cliente</span>
-              <input id="customerName" name="customerName" type="text" placeholder="Ej. Laura Martínez" required>
+              <input id="customerName" name="customerName" type="text" placeholder="Felipe Sepúlveda" required>
             </label>
             <label class="form__field">
               <span>Monto</span>

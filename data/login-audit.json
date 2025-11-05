@@ -1,5 +1,26 @@
 [
   {
+    "id": "87ddb0e2-fdae-476e-b23e-4e694c94b1e5",
+    "email": "hola@gmail.com",
+    "userId": "507f482e-308c-4d5c-95b3-0939a7378d51",
+    "status": "login",
+    "createdAt": "2025-11-05T02:28:43.968Z"
+  },
+  {
+    "id": "ed3f771d-5e4a-4ad1-8cb2-9cf41cd24e43",
+    "email": "hola@gmail.com",
+    "userId": "507f482e-308c-4d5c-95b3-0939a7378d51",
+    "status": "register",
+    "createdAt": "2025-11-05T02:28:39.835Z"
+  },
+  {
+    "id": "b9ff5be6-01ce-4d25-8f3e-b6712637f508",
+    "email": "hola@gmail.com",
+    "userId": null,
+    "status": "user-not-found",
+    "createdAt": "2025-11-05T02:28:28.611Z"
+  },
+  {
     "id": "7de87b2e-0502-46e0-adf2-3f3ac04221cf",
     "email": "owowow@gmail.com",
     "userId": "4ca3d254-fd09-4f35-ab5a-5d1e2b42d61b",

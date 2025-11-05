@@ -1,46 +1,86 @@
 'use strict';
 
+const footerYear = document.getElementById('year');
+if (footerYear) {
+  footerYear.textContent = new Date().getFullYear();
+}
+
 const loginForm = document.getElementById('login-form');
+const registerForm = document.getElementById('register-form');
 const loginMessageEl = document.getElementById('login-message');
+const registerMessageEl = document.getElementById('register-message');
 const loginSubmit = document.getElementById('login-submit');
-const loginCard = document.getElementById('login-card');
+const registerSubmit = document.getElementById('register-submit');
+const authCard = document.getElementById('auth-card');
+const authTabs = document.querySelectorAll('[data-auth-tab]');
+const authPanels = document.querySelectorAll('[data-auth-panel]');
 const paymentSections = document.querySelectorAll('[data-section="payments"]');
 const userPanel = document.getElementById('user-panel');
 const userEmailEl = document.getElementById('user-email');
 const userLastLoginEl = document.getElementById('user-last-login');
 const userAvatarEl = document.getElementById('user-avatar');
 const logoutButton = document.getElementById('logout-button');
-const form = document.getElementById('payment-form');
-const messageEl = document.getElementById('form-message');
+const paymentForm = document.getElementById('payment-form');
+const paymentMessageEl = document.getElementById('form-message');
 const tableBody = document.getElementById('payments-table-body');
 const downloadButton = document.getElementById('download-button');
-const footerYear = document.getElementById('year');
 
+let activeAuthMode = 'login';
 let payments = [];
 let authToken = localStorage.getItem('authToken') || '';
 let currentUser = null;
-
-footerYear.textContent = new Date().getFullYear();
 
 function buildAuthHeaders(extra = {}) {
   return authToken ? { ...extra, Authorization: `Bearer ${authToken}` } : { ...extra };
 }
 
-function showLoginMessage(message, type = 'info') {
-  if (!loginMessageEl) {
+function setFormMessage(element, message = '', type = 'info') {
+  if (!element) {
     return;
   }
 
-  loginMessageEl.textContent = message;
-  loginMessageEl.className = 'form__message';
+  element.textContent = message;
+  element.className = 'form__message';
+
+  if (!message) {
+    return;
+  }
 
   if (type === 'success') {
-    loginMessageEl.classList.add('form__message--success');
+    element.classList.add('form__message--success');
   }
 
   if (type === 'error') {
-    loginMessageEl.classList.add('form__message--error');
+    element.classList.add('form__message--error');
   }
+}
+
+function switchAuthMode(mode) {
+  activeAuthMode = mode;
+
+  authTabs.forEach((tab) => {
+    const isActive = tab.dataset.authTab === mode;
+    tab.classList.toggle('card__tab--active', isActive);
+    tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    tab.setAttribute('tabindex', isActive ? '0' : '-1');
+  });
+
+  authPanels.forEach((panel) => {
+    const target = panel.dataset.authPanel;
+    if (target) {
+      panel.hidden = target !== mode;
+    }
+  });
+
+  if (mode === 'login') {
+    setFormMessage(registerMessageEl, '');
+  } else {
+    setFormMessage(loginMessageEl, '');
+  }
+
+  const targetForm = mode === 'login' ? loginForm : registerForm;
+  const emailInput = targetForm?.querySelector('input[name="email"]');
+  emailInput?.focus();
 }
 
 function computeAvatarInitials(email) {
@@ -79,8 +119,8 @@ function formatLastLogin(isoDate) {
 function updateSections() {
   const isAuthenticated = Boolean(authToken && currentUser);
 
-  if (loginCard) {
-    loginCard.hidden = isAuthenticated;
+  if (authCard) {
+    authCard.hidden = isAuthenticated;
   }
 
   paymentSections.forEach((section) => {
@@ -103,9 +143,13 @@ function updateSections() {
 function setAuth(token, user, persist = true) {
   authToken = token;
   currentUser = user;
+
   if (persist && token) {
     localStorage.setItem('authToken', token);
   }
+
+  setFormMessage(loginMessageEl, '');
+  setFormMessage(registerMessageEl, '');
   updateSections();
 }
 
@@ -113,24 +157,33 @@ function clearAuth(message, type = 'info') {
   authToken = '';
   currentUser = null;
   localStorage.removeItem('authToken');
-  updateSections();
-  payments = [];
-  renderPayments();
+
   if (loginForm) {
     loginForm.reset();
-    loginForm.email?.focus();
   }
-  if (typeof message === 'string') {
-    showLoginMessage(message, type);
+
+  if (registerForm) {
+    registerForm.reset();
+  }
+
+  setFormMessage(registerMessageEl, '');
+  payments = [];
+  renderPayments();
+  updateSections();
+  switchAuthMode('login');
+
+  if (typeof message === 'string' && message) {
+    setFormMessage(loginMessageEl, message, type);
   } else {
-    showLoginMessage('', 'info');
+    setFormMessage(loginMessageEl, '');
   }
 }
 
 async function validateSession() {
   if (!authToken) {
     updateSections();
-    showLoginMessage('Inicia sesión para gestionar tus cobros.', 'info');
+    switchAuthMode('login');
+    setFormMessage(loginMessageEl, 'Inicia sesión para gestionar tus cobros.', 'info');
     return;
   }
 
@@ -145,7 +198,7 @@ async function validateSession() {
 
     const data = await response.json();
     setAuth(authToken, data.user, false);
-    showLoginMessage('Sesión restaurada correctamente.', 'success');
+    setFormMessage(loginMessageEl, 'Sesión restaurada correctamente.', 'success');
     await loadPayments();
   } catch (error) {
     console.warn('No se pudo validar la sesión', error);
@@ -175,9 +228,9 @@ async function loadPayments() {
     const data = await response.json();
     payments = data.payments || [];
     renderPayments();
-    showMessage('', 'info');
+    setPaymentMessage('');
   } catch (error) {
-    showMessage(error.message, 'error');
+    setPaymentMessage(error.message, 'error');
   }
 }
 
@@ -227,23 +280,29 @@ function escapeHtml(value) {
     .replaceAll("'", '&#039;');
 }
 
-function resetForm() {
-  form.reset();
-  form.accountNumber.focus();
+function resetPaymentForm() {
+  paymentForm.reset();
+  paymentForm.accountNumber?.focus();
 }
 
-function showMessage(message, type) {
-  if (!messageEl) {
+function setPaymentMessage(message, type = 'info') {
+  if (!paymentMessageEl) {
     return;
   }
 
-  messageEl.textContent = message;
-  messageEl.className = 'form__message';
-  if (type === 'success') {
-    messageEl.classList.add('form__message--success');
+  paymentMessageEl.textContent = message;
+  paymentMessageEl.className = 'form__message';
+
+  if (!message) {
+    return;
   }
+
+  if (type === 'success') {
+    paymentMessageEl.classList.add('form__message--success');
+  }
+
   if (type === 'error') {
-    messageEl.classList.add('form__message--error');
+    paymentMessageEl.classList.add('form__message--error');
   }
 }
 
@@ -251,8 +310,14 @@ function handleUnauthorized() {
   clearAuth('Tu sesión expiró, vuelve a ingresar.', 'error');
 }
 
-if (form) {
-  form.addEventListener('submit', async (event) => {
+authTabs.forEach((tab) => {
+  tab.addEventListener('click', () => {
+    switchAuthMode(tab.dataset.authTab || 'login');
+  });
+});
+
+if (paymentForm) {
+  paymentForm.addEventListener('submit', async (event) => {
     event.preventDefault();
 
     if (!authToken) {
@@ -260,7 +325,7 @@ if (form) {
       return;
     }
 
-    const formData = new FormData(form);
+    const formData = new FormData(paymentForm);
     const payload = Object.fromEntries(formData.entries());
 
     try {
@@ -285,10 +350,10 @@ if (form) {
       const { payment } = await response.json();
       payments = [payment, ...payments];
       renderPayments();
-      showMessage('Pago registrado correctamente', 'success');
-      resetForm();
+      setPaymentMessage('Pago registrado correctamente', 'success');
+      resetPaymentForm();
     } catch (error) {
-      showMessage(error.message, 'error');
+      setPaymentMessage(error.message, 'error');
     }
   });
 }
@@ -301,10 +366,12 @@ if (loginForm) {
     const payload = Object.fromEntries(formData.entries());
     payload.email = String(payload.email || '').trim();
 
-    const defaultText = loginSubmit.textContent;
-    loginSubmit.disabled = true;
-    loginSubmit.textContent = 'Validando...';
-    showLoginMessage('Comprobando credenciales...', 'info');
+    const defaultText = loginSubmit ? loginSubmit.textContent : '';
+    if (loginSubmit) {
+      loginSubmit.disabled = true;
+      loginSubmit.textContent = 'Validando...';
+    }
+    setFormMessage(loginMessageEl, 'Comprobando credenciales...', 'info');
 
     try {
       const response = await fetch('/api/auth/login', {
@@ -322,7 +389,7 @@ if (loginForm) {
 
       const data = await response.json();
       setAuth(data.token, data.user);
-      showLoginMessage('Ingreso exitoso. Cargando panel...', 'success');
+      setFormMessage(loginMessageEl, 'Ingreso exitoso. Cargando panel...', 'success');
       payments = [];
       renderPayments();
       loginForm.reset();
@@ -332,15 +399,83 @@ if (loginForm) {
       currentUser = null;
       localStorage.removeItem('authToken');
       updateSections();
-      showLoginMessage(error.message, 'error');
+      setFormMessage(loginMessageEl, error.message, 'error');
       const passwordInput = loginForm.querySelector('input[name="password"]');
       if (passwordInput) {
         passwordInput.value = '';
         passwordInput.focus();
       }
     } finally {
-      loginSubmit.disabled = false;
-      loginSubmit.textContent = defaultText;
+      if (loginSubmit) {
+        loginSubmit.disabled = false;
+        loginSubmit.textContent = defaultText;
+      }
+    }
+  });
+}
+
+if (registerForm) {
+  registerForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(registerForm);
+    const payload = Object.fromEntries(formData.entries());
+    payload.email = String(payload.email || '').trim();
+
+    if (payload.password !== payload.passwordConfirm) {
+      setFormMessage(registerMessageEl, 'Las contraseñas no coinciden', 'error');
+      const confirmInput = registerForm.querySelector('input[name="passwordConfirm"]');
+      confirmInput?.focus();
+      return;
+    }
+
+    const requestPayload = {
+      email: payload.email,
+      password: payload.password
+    };
+
+    const defaultText = registerSubmit ? registerSubmit.textContent : '';
+    if (registerSubmit) {
+      registerSubmit.disabled = true;
+      registerSubmit.textContent = 'Creando...';
+    }
+    setFormMessage(registerMessageEl, 'Creando cuenta...', 'info');
+
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestPayload)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'No se pudo crear la cuenta' }));
+        throw new Error(errorData.message || 'No se pudo crear la cuenta');
+      }
+
+      const data = await response.json();
+      registerForm.reset();
+      setFormMessage(registerMessageEl, '');
+      switchAuthMode('login');
+      if (loginForm) {
+        const loginEmail = loginForm.querySelector('input[name="email"]');
+        if (loginEmail) {
+          loginEmail.value = data.user?.email || requestPayload.email;
+        }
+        const loginPassword = loginForm.querySelector('input[name="password"]');
+        loginPassword?.focus();
+      }
+
+      setFormMessage(loginMessageEl, 'Cuenta creada. Ahora inicia sesión.', 'success');
+    } catch (error) {
+      setFormMessage(registerMessageEl, error.message, 'error');
+    } finally {
+      if (registerSubmit) {
+        registerSubmit.disabled = false;
+        registerSubmit.textContent = defaultText;
+      }
     }
   });
 }
@@ -373,7 +508,7 @@ if (downloadButton) {
     }
 
     if (!payments.length) {
-      showMessage('No hay datos para exportar', 'error');
+      setPaymentMessage('No hay datos para exportar', 'error');
       return;
     }
 
@@ -403,6 +538,7 @@ if (downloadButton) {
   });
 }
 
+switchAuthMode('login');
 renderPayments();
 updateSections();
 validateSession();

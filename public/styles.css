@@ -123,10 +123,46 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 }
 
-.card--login {
+.card--auth {
   grid-column: 1 / -1;
   max-width: 480px;
   justify-self: center;
+}
+
+.card__tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  margin-bottom: 1.5rem;
+}
+
+.card__tab {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--gray-400, #cbd5f5);
+  font-weight: 500;
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.card__tab:hover,
+.card__tab:focus-visible {
+  background: rgba(37, 99, 235, 0.15);
+  color: var(--white);
+  outline: none;
+}
+
+.card__tab--active {
+  background: rgba(37, 99, 235, 0.3);
+  color: var(--white);
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.35);
 }
 
 .card {
@@ -322,7 +358,7 @@ body {
   font-size: 0.85rem;
 }
 
-.login__hint {
+.auth__hint {
   margin-top: 1rem;
   color: var(--gray-500);
   font-size: 0.85rem;
@@ -351,5 +387,14 @@ body {
 
   .page__user {
     justify-content: center;
+  }
+
+  .card__tabs {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .card__tab {
+    flex: 1;
   }
 }

@@ -16,5 +16,14 @@
     "createdAt": "2025-11-05T01:44:12.776Z",
     "lastLoginAt": "2025-11-05T01:50:16.524Z",
     "loginCount": 2
+  },
+  {
+    "id": "507f482e-308c-4d5c-95b3-0939a7378d51",
+    "email": "hola@gmail.com",
+    "salt": "8e3826a976fcb3bcb8fc0a0d354dc2ee",
+    "passwordHash": "bd6fa0656179d3dbfbea387bda122336107471ad02ba75fb5313e3035f99ce3a83a97a222fc50bfaebf1f85a39ba880b35fa6932b4ea26ebf6bc47d4f69f73e1",
+    "createdAt": "2025-11-05T02:28:39.749Z",
+    "lastLoginAt": "2025-11-05T02:28:43.967Z",
+    "loginCount": 1
   }
 ]
