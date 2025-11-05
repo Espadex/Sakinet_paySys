@@ -15,10 +15,42 @@
       <div class="page__badge">Telecom Billing</div>
       <h1>Portal de pagos</h1>
       <p>Gestiona los cobros de tus clientes en un panel moderno y registra cada transacción en segundos.</p>
+      <div class="page__header-auth" id="user-panel" hidden>
+        <div class="page__user">
+          <div class="page__user-avatar" id="user-avatar" aria-hidden="true">TB</div>
+          <div class="page__user-info">
+            <span id="user-email"></span>
+            <small id="user-last-login"></small>
+          </div>
+        </div>
+        <button id="logout-button" class="button button--ghost button--small" type="button">Cerrar sesión</button>
+      </div>
     </header>
 
     <main class="page__content">
-      <section class="card card--form">
+      <section class="card card--login" id="login-card" data-section="login">
+        <div class="card__header">
+          <h2>Accede al portal</h2>
+          <p>Inicia sesión para gestionar la facturación y registrar nuevos pagos.</p>
+        </div>
+        <form id="login-form" class="form form--login" autocomplete="on">
+          <label class="form__field">
+            <span>Correo electrónico</span>
+            <input id="loginEmail" name="email" type="email" inputmode="email" placeholder="tu.nombre@telecom.com" required autocomplete="email">
+          </label>
+          <label class="form__field">
+            <span>Contraseña</span>
+            <input id="loginPassword" name="password" type="password" placeholder="Ingresa tu contraseña" required minlength="6" autocomplete="current-password">
+          </label>
+          <div class="form__actions">
+            <button type="submit" id="login-submit" class="button">Entrar</button>
+            <p id="login-message" class="form__message" role="status"></p>
+          </div>
+        </form>
+        <p class="login__hint">¿Primera vez? Crearemos tu acceso automáticamente con las credenciales que ingreses.</p>
+      </section>
+
+      <section class="card card--form" data-section="payments" hidden>
         <div class="card__header">
           <h2>Registrar pago</h2>
           <p>Completa los detalles de la factura y confirma el cobro.</p>
@@ -59,7 +91,7 @@
         </form>
       </section>
 
-      <section class="card card--history">
+      <section class="card card--history" data-section="payments" hidden>
         <div class="card__header card__header--row">
           <div>
             <h2>Historial de pagos</h2>

@@ -1,11 +1,28 @@
 [
   {
-    "id": "80e8aacb-b256-4ad7-be6e-28821f60a0e2",
-    "accountNumber": "5552352",
+    "id": "a4e39b66-6d00-486c-8eef-ec7046df9c46",
+    "accountNumber": "5552353",
     "customerName": "renton tapia",
-    "amount": 75000,
+    "amount": 300000,
     "paymentMethod": "Tarjeta débito",
-    "notes": "hola",
-    "createdAt": "2025-11-04T01:22:18.753Z"
+    "notes": "ola",
+    "createdAt": "2025-11-05T01:49:58.836Z",
+    "createdBy": {
+      "id": "0462db5e-342f-4afe-9574-e19466436873",
+      "email": "rentondty@gmail.com"
+    }
+  },
+  {
+    "id": "22bd965f-dbe1-4242-bf19-4cc9e17c03f8",
+    "accountNumber": "5552352",
+    "customerName": "owowowow",
+    "amount": 300000,
+    "paymentMethod": "Tarjeta débito",
+    "notes": "pago 20 fibras opticas.",
+    "createdAt": "2025-11-05T01:48:06.182Z",
+    "createdBy": {
+      "id": "4ca3d254-fd09-4f35-ab5a-5d1e2b42d61b",
+      "email": "owowow@gmail.com"
+    }
   }
 ]

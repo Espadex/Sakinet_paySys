@@ -69,10 +69,64 @@ body {
   color: var(--gray-300);
 }
 
+.page__header-auth {
+  margin: 2rem auto 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 999px;
+  color: var(--gray-100);
+}
+
+.page__user {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.page__user-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(37, 99, 235, 0.2);
+  color: var(--primary-100);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.08em;
+}
+
+.page__user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+}
+
+.page__user-info span {
+  font-weight: 600;
+  color: var(--white);
+}
+
+.page__user-info small {
+  color: var(--gray-500);
+  font-size: 0.8rem;
+}
+
 .page__content {
   display: grid;
   gap: 2rem;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+.card--login {
+  grid-column: 1 / -1;
+  max-width: 480px;
+  justify-self: center;
 }
 
 .card {
@@ -158,6 +212,12 @@ body {
   flex-wrap: wrap;
 }
 
+.form--login {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
 .button {
   display: inline-flex;
   align-items: center;
@@ -188,6 +248,18 @@ body {
   background: transparent;
   border: 1px solid rgba(148, 163, 184, 0.25);
   color: var(--gray-100);
+}
+
+.button--small {
+  padding: 0.55rem 1rem;
+  font-size: 0.9rem;
+}
+
+.button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
 }
 
 .table-wrapper {
@@ -250,6 +322,13 @@ body {
   font-size: 0.85rem;
 }
 
+.login__hint {
+  margin-top: 1rem;
+  color: var(--gray-500);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
 @media (max-width: 720px) {
   .page {
     padding: 2.2rem 1.2rem 3rem;
@@ -262,5 +341,15 @@ body {
   .card__header--row {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .page__header-auth {
+    flex-direction: column;
+    align-items: stretch;
+    border-radius: 20px;
+  }
+
+  .page__user {
+    justify-content: center;
   }
 }

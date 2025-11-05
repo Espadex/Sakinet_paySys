@@ -1,0 +1,37 @@
+[
+  {
+    "id": "7de87b2e-0502-46e0-adf2-3f3ac04221cf",
+    "email": "owowow@gmail.com",
+    "userId": "4ca3d254-fd09-4f35-ab5a-5d1e2b42d61b",
+    "status": "login",
+    "createdAt": "2025-11-05T01:50:16.619Z"
+  },
+  {
+    "id": "18a35460-ebcd-4907-8a86-e898e1ae325a",
+    "email": "rentondty@gmail.com",
+    "userId": "0462db5e-342f-4afe-9574-e19466436873",
+    "status": "login",
+    "createdAt": "2025-11-05T01:50:08.065Z"
+  },
+  {
+    "id": "b96307ed-c340-474a-8a87-e7f7031f1099",
+    "email": "rentondty@gmail.com",
+    "userId": "0462db5e-342f-4afe-9574-e19466436873",
+    "status": "login",
+    "createdAt": "2025-11-05T01:49:44.846Z"
+  },
+  {
+    "id": "3b6e8057-93be-4c3f-b4e0-7c79546817ff",
+    "email": "owowow@gmail.com",
+    "userId": "4ca3d254-fd09-4f35-ab5a-5d1e2b42d61b",
+    "status": "register",
+    "createdAt": "2025-11-05T01:44:12.859Z"
+  },
+  {
+    "id": "b32e4d2e-6c46-4fdb-92d2-35fcc672cc07",
+    "email": "rentondty@gmail.com",
+    "userId": "0462db5e-342f-4afe-9574-e19466436873",
+    "status": "register",
+    "createdAt": "2025-11-05T01:43:47.732Z"
+  }
+]
